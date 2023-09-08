@@ -22,7 +22,7 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
-const apiLink = `https://countries-api-836d.onrender.com/countries/name/`;
+const apiLink = `https://countries-api-836d.onrender.com/countries`;
 
 // ///////////////////////////////////////
 // // Our First AJAX Call: XMLHttpRequest
@@ -110,9 +110,18 @@ const apiLink = `https://countries-api-836d.onrender.com/countries/name/`;
 // getCountryData("india");
 
 const getCountryData = function (country) {
-  fetch(`${apiLink}${country}`)
-    .then((response) => response.json())
-    .then((actualData) => renderCountry(actualData[0]))
-};
+  fetch(`${apiLink}/name/${country}`)
+    .then(response => response.json())
+    .then((data) => {
+      renderCountry(data[0]);
+      const neighbour = data[0].borders[0];
+      if (!neighbour) return;
+      //country-2
+      return fetch(`${apiLink}/alpha/${neighbour}`);
+    }).then(response => response.json())
+    .then((data) => {
+      renderCountry(data, 'neighbour');
+    });
+}
 
-getCountryData("india");
+getCountryData("germany");
