@@ -146,10 +146,12 @@ const apiLink = `https://countries-api-836d.onrender.com/countries`;
 const getCountryData = function (country) {
   fetch(`${apiLink}/name/${country}`)
     .then(
-      response => response.json(),
-      // (reason) => {
-      //   alert(reason) // Error!
-      // },
+      response => {
+        if (!response.ok)
+          throw new Error(`Country not found (${response.status})`);
+
+        return response.json();
+      }
     )
     .then((data) => {
       renderCountry(data[0]);
@@ -170,5 +172,5 @@ const getCountryData = function (country) {
 
 
 btn.addEventListener("click", function () {
-  getCountryData("germany");
+  getCountryData("asbhwud");
 })
