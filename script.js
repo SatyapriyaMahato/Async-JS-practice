@@ -22,6 +22,8 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
+const apiLink = `https://countries-api-836d.onrender.com/countries/name/`;
+
 // ///////////////////////////////////////
 // // Our First AJAX Call: XMLHttpRequest
 
@@ -92,17 +94,25 @@ const renderCountry = function (data, className = '') {
 
 // Consuming Promises
 
-const apiLink = `https://countries-api-836d.onrender.com/countries/name/`;
+// const apiLink = `https://countries-api-836d.onrender.com/countries/name/`;
+
+// const getCountryData = function (country) {
+//   fetch(`${apiLink}${country}`) // returns promise
+//     .then(function (response) { // .then means if the promise is settled
+//       // console.log(response);
+//       return response.json(); // return an new promise and response.json give sthe data or the body
+//     }).then(function (actualData) {
+//       console.log(actualData);
+//       renderCountry(actualData[0]);
+//     })
+// };
+
+// getCountryData("india");
 
 const getCountryData = function (country) {
-  fetch(`${apiLink}${country}`) // returns promise
-    .then(function (response) { // .then means if the promise is settled
-      // console.log(response);
-      return response.json(); // return an new promise and response.json give sthe data or the body
-    }).then(function (actualData) {
-      console.log(actualData);
-      renderCountry(actualData[0]);
-    })
+  fetch(`${apiLink}${country}`)
+    .then((response) => response.json())
+    .then((actualData) => renderCountry(actualData[0]))
 };
 
 getCountryData("india");
