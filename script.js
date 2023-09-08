@@ -19,12 +19,12 @@ const renderCountry = function (data, className = '') {
   </article>
   `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
+  // countriesContainer.style.opacity = 1; handled by finally method
 };
 
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
-  countriesContainer.style.opacity = 1;
+  // countriesContainer.style.opacity = 1;
 };
 
 const apiLink = `https://countries-api-836d.onrender.com/countries`;
@@ -163,7 +163,9 @@ const getCountryData = function (country) {
     }).catch(err => {
       console.error(`${err} 💥💥💥`);
       renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
-    })
+    }).finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
 }
 
 
