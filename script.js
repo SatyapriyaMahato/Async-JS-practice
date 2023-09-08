@@ -22,7 +22,14 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  countriesContainer.style.opacity = 1;
+};
+
 const apiLink = `https://countries-api-836d.onrender.com/countries`;
+
+
 
 // ///////////////////////////////////////
 // // Our First AJAX Call: XMLHttpRequest
@@ -109,9 +116,41 @@ const apiLink = `https://countries-api-836d.onrender.com/countries`;
 
 // getCountryData("india");
 
+// const getCountryData = function (country) {
+//   fetch(`${apiLink}/name/${country}`)
+//     .then(
+//       response => response.json()
+//     )
+//     .then((data) => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[0];
+//       if (!neighbour) return;
+//       //country-2
+//       return fetch(`${apiLink}/alpha/${neighbour}`);
+//     }).then(response => response.json())
+//     .then((data) => {
+//       renderCountry(data, 'neighbour');
+//     });
+// }
+
+
+// btn.addEventListener("click", function () {
+//   getCountryData("germany");
+// })
+
+
+//Handle promise rejections
+// this happens only when user losses internet connection
+
+
 const getCountryData = function (country) {
   fetch(`${apiLink}/name/${country}`)
-    .then(response => response.json())
+    .then(
+      response => response.json(),
+      // (reason) => {
+      //   alert(reason) // Error!
+      // },
+    )
     .then((data) => {
       renderCountry(data[0]);
       const neighbour = data[0].borders[0];
@@ -121,7 +160,13 @@ const getCountryData = function (country) {
     }).then(response => response.json())
     .then((data) => {
       renderCountry(data, 'neighbour');
-    });
+    }).catch(err => {
+      console.error(`${err} 💥💥💥`);
+      renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
+    })
 }
 
-getCountryData("germany");
+
+btn.addEventListener("click", function () {
+  getCountryData("germany");
+})
