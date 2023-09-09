@@ -1,5 +1,7 @@
 'use strict';
 
+// const { response } = require("express");
+
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
@@ -25,6 +27,14 @@ const renderCountry = function (data, className = '') {
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
   // countriesContainer.style.opacity = 1;
+};
+
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+
+    return response.json();
+  });
 };
 
 const apiLink = `https://countries-api-836d.onrender.com/countries`;
@@ -143,34 +153,93 @@ const apiLink = `https://countries-api-836d.onrender.com/countries`;
 // this happens only when user losses internet connection
 
 
-const getCountryData = function (country) {
-  fetch(`${apiLink}/name/${country}`)
-    .then(
-      response => {
-        if (!response.ok)
-          throw new Error(`Country not found (${response.status})`);
+// const getCountryData = function (country) {
+//   fetch(`${apiLink}/name/${country}`)
+//     .then(
+//       response => {
+//         if (!response.ok)
+//           throw new Error(`Country not found (${response.status})`);
 
-        return response.json();
-      }
-    )
-    .then((data) => {
+//         return response.json();
+//       }
+//     )
+//     .then((data) => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[0];
+//       if (!neighbour) return;
+//       //country-2
+//       return fetch(`${apiLink}/alpha/${neighbour}`);
+//     }).then(response => response.json())
+//     .then((data) => {
+//       renderCountry(data, 'neighbour');
+//     }).catch(err => {
+//       console.error(`${err} 💥💥💥`);
+//       renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
+//     }).finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// }
+
+
+// btn.addEventListener("click", function () {
+//   getCountryData("asbhwud");
+// })
+
+const getCountryData = function (country) {
+  // Country 1
+  getJSON(
+    `${apiLink}/name/${country}`,
+    'Country not found'
+  )
+    .then(data => {
       renderCountry(data[0]);
       const neighbour = data[0].borders[0];
-      if (!neighbour) return;
-      //country-2
-      return fetch(`${apiLink}/alpha/${neighbour}`);
-    }).then(response => response.json())
-    .then((data) => {
-      renderCountry(data, 'neighbour');
-    }).catch(err => {
+
+      if (!neighbour) throw new Error('No neighbour found!');
+
+      // Country 2
+      return getJSON(
+        `${apiLink}/alpha/${neighbour}`,
+        'Country not found'
+      );
+    })
+
+    .then(data => renderCountry(data, 'neighbour'))
+    .catch(err => {
       console.error(`${err} 💥💥💥`);
       renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
-    }).finally(() => {
+    })
+    .finally(() => {
       countriesContainer.style.opacity = 1;
     });
+};
+
+
+
+// getCountryData('australia');
+
+// CHALLENEGE - 1
+const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
+
+
+
+const whereAmI = function (lat, lng) {
+  fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`)
+    .then((response) => {
+      if (!response.ok) throw new Error(`Something not right (${response.status})`);
+      return response.json();
+    })
+    .then(function (data) {
+      getCountryData(data.address.country);
+    })
+    .catch(Error => {
+      alert(Error) // Error!
+    },);
 }
 
 
-btn.addEventListener("click", function () {
-  getCountryData("asbhwud");
-})
+btn.addEventListener('click', function () {
+  whereAmI(22.508534, 88.410564);
+});
+
+
