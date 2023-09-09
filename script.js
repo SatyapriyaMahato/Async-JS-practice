@@ -219,27 +219,40 @@ const getCountryData = function (country) {
 // getCountryData('australia');
 
 // CHALLENEGE - 1
-const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
+// const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
 
 
 
-const whereAmI = function (lat, lng) {
-  fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`)
-    .then((response) => {
-      if (!response.ok) throw new Error(`Something not right (${response.status})`);
-      return response.json();
-    })
-    .then(function (data) {
-      getCountryData(data.address.country);
-    })
-    .catch(Error => {
-      alert(Error) // Error!
-    },);
-}
+// const whereAmI = function (lat, lng) {
+//   fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`)
+//     .then((response) => {
+//       if (!response.ok) throw new Error(`Something not right (${response.status})`);
+//       return response.json();
+//     })
+//     .then(function (data) {
+//       getCountryData(data.address.country);
+//     })
+//     .catch(Error => {
+//       alert(Error) // Error!
+//     },);
+// }
 
 
-btn.addEventListener('click', function () {
-  whereAmI(22.508534, 88.410564);
+// btn.addEventListener('click', function () {
+//   whereAmI(22.508534, 88.410564);
+// });
+
+//Working examp-le of async js
+
+// The Event Loop in Practice
+console.log('Test start');
+setTimeout(() => console.log('0 sec timer'), 0);
+Promise.resolve('Resolved promise 1').then(res => console.log(res));
+
+Promise.resolve('Resolved promise 2').then(res => {
+  for (let i = 0; i < 1000000000; i++) { }
+  console.log(res);
 });
 
+console.log('Test end');
 
