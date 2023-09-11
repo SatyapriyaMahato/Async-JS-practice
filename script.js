@@ -325,7 +325,6 @@ const getPosition = function () {
 };
 
 
-getPosition().then(pos => console.log(pos));
 
 
 const whereAmI = function () {
@@ -337,11 +336,69 @@ const whereAmI = function () {
     return response.json();
   })
     .then(function (data) {
-      console.log(data);
       getCountryData(data.address.country);
     })
-  // .catch(Error => {
-  //   alert(Error) // Error!
-  // },);
+    .catch(Error => {
+      alert(Error) // Error!
+    },);
 }
-btn.addEventListener('click', whereAmI);
+// btn.addEventListener('click', whereAmI);
+
+
+// const createImage = function (imgPath) {
+//   return new Promise(function (resolve, reject) {
+//     resolve(document.createElement('img'))
+//   });
+// }
+
+// createImage(`https://picsum.photos/id/237/200/300`)
+//   .then(value => {
+//     value.setAttribute("src", imgPath);
+//     console.log()
+//   });
+
+let imgEl = '';
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const createImg = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    resolve(document.createElement('img'))
+  }).then(data => {
+    data.setAttribute("src", `${imgPath}`);
+    return data;
+  }).then(data => {
+    imgEl = data;
+    countriesContainer.appendChild(data)
+  })
+    .then(() => {
+      wait(2).then(() => {
+        imgEl.style.display = "none";
+        console.log(imgEl);
+      })
+        .then(() => {
+          wait(2).then(() => {
+            console.log(imgEl);
+            imgEl.setAttribute("src", "https://picsum.photos/id/237/400/300");
+            imgEl.style.display = "block";
+          }).then(() => {
+            wait(2).then(() => {
+              console.log(imgEl);
+              imgEl.style.display = "none";
+            })
+          })
+        })
+    })
+    .catch(Error => {
+      alert(Error) // Error!
+    },)
+};
+
+btn.addEventListener("click", function () {
+  createImg("https://picsum.photos/id/237/200/300");
+})
+
