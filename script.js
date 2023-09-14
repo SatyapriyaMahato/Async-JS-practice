@@ -461,21 +461,80 @@ const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
 // };
 
 
-const whereAmI = async function (country) {
-  // this code will run in the bg till the res value is fetched
-  // the blocking in the await function will not interefere with the main thread 
-  // on which the main code is getting executed.
-  const res = await fetch(`https://countries-api-836d.onrender.com/countries/name/${country}`);
+// const whereAmI = async function (country) {
+//   // this code will run in the bg till the res value is fetched
+//   // the blocking in the await function will not interefere with the main thread 
+//   // on which the main code is getting executed.
+//   const res = await fetch(`https://countries-api-836d.onrender.com/countries/name/${country}`);
 
-  // sync await is just syntactical sugercoading over the then function else
-  // fetch("link").then(res=>console.log(res);)
+//   // sync await is just syntactical sugercoading over the then function else
+//   // fetch("link").then(res=>console.log(res);)
 
-  // since the res.json() return a new promise and then we had to return that promise 
-  // and then we chain .then handler on that promise
-  // but we can directly store in a vatiable directlly
-  const data = await res.json();
-  renderCountry(data[0]);
-  console.log(data);
+//   // since the res.json() return a new promise and then we had to return that promise 
+//   // and then we chain .then handler on that promise
+//   // but we can directly store in a vatiable directlly
+//   const data = await res.json();
+//   renderCountry(data[0]);
+//   console.log(data);
+// }
+
+// whereAmI(`germany`);
+
+// try catch
+
+// try {
+//   let x = 1;
+//   const y = 6;
+//   y = 5;
+// } catch (err) {
+//   alert(err);
+// }
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   err => reject(err)
+    // );
+    // here the position is automatically passed into the resolve as argument
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+
+
+
+
+
+const whereAmI = async function () {
+  try {
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
+
+    const resLoc = await fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`);
+    if (!resLoc.ok) throw new Error('Problem getting location data');
+
+    const countryData = await resLoc.json();
+
+    const resGeo = await fetch(`https://countries-api-836d.onrender.com/countries/name/${countryData.address.country}`);
+
+    if (!resGeo.ok) throw new Error('Problem getting country');
+
+    const data = await resGeo.json();
+
+    renderCountry(data[0]);
+    console.log(data);
+  }
+  catch (err) {
+    alert(err);
+  }
 }
+whereAmI();
 
-whereAmI(`germany`);
+
