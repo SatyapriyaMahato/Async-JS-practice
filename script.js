@@ -490,64 +490,104 @@ const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
 //   alert(err);
 // }
 
-const wait = function (seconds) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, seconds * 1000);
-  });
-};
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
 
-const getPosition = function () {
-  return new Promise(function (resolve, reject) {
-    // navigator.geolocation.getCurrentPosition(
-    //   position => resolve(position),
-    //   err => reject(err)
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     // navigator.geolocation.getCurrentPosition(
+//     //   position => resolve(position),
+//     //   err => reject(err)
+//     // );
+//     // here the position is automatically passed into the resolve as argument
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
+
+
+
+// const whereAmI = async function () {
+//   try {
+//     const pos = await getPosition();
+//     const { latitude: lat, longitude: lng } = pos.coords;
+
+//     const resLoc = await fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`);
+//     if (!resLoc.ok) throw new Error('Problem getting location data');
+
+//     const countryData = await resLoc.json();
+
+//     const resGeo = await fetch(`https://countries-api-836d.onrender.com/countries/name/${countryData.address.country}`);
+//     if (!resGeo.ok) throw new Error('Problem getting country');
+
+//     const data = await resGeo.json();
+
+//     renderCountry(data[0]);
+
+//     return `you are in ${countryData.address.country}`;
+//   }
+//   catch (err) {
+//     // alert(err);
+//     throw err;
+//   }
+// };
+
+
+// (async function () {
+//   try {
+//     const city = await whereAmI();
+//     console.log(`2: ${city}`);
+//   } catch (err) {
+//     console.error(`2: ${err} 💥`);
+//   }
+//   console.log('3: Finished getting location');
+// })();
+
+///////////////////////////////////////
+
+// const data = await Promise.all([
+//   getJSON(`https://restcountries.eu/rest/v2/name/${c1}`),
+//   getJSON(`https://restcountries.eu/rest/v2/name/${c2}`),
+//   getJSON(`https://restcountries.eu/rest/v2/name/${c3}`),
+// ]);
+// console.log(data.map(d => d[0].capital));
+// } catch (err) {
+// console.error(err);
+// }
+// Running Promises in Parallel
+const get3Countries = async function (c1, c2, c3) {
+  try {
+    // const [data1] = await getJSON(
+    //   `https://countries-api-836d.onrender.com/countries/name/${c1}`
     // );
-    // here the position is automatically passed into the resolve as argument
-    navigator.geolocation.getCurrentPosition(resolve, reject);
-  });
-};
+    // const [data2] = await getJSON(
+    //   `https://countries-api-836d.onrender.com/countries/name/${c2}`
+    // );
+    // const [data3] = await getJSON(
+    //   `https://countries-api-836d.onrender.com/countries/name/${c3}`
+    // );
 
 
-
-
-
-
-const whereAmI = async function () {
-  try {
-    const pos = await getPosition();
-    const { latitude: lat, longitude: lng } = pos.coords;
-
-    const resLoc = await fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`);
-    if (!resLoc.ok) throw new Error('Problem getting location data');
-
-    const countryData = await resLoc.json();
-
-    const resGeo = await fetch(`https://countries-api-836d.onrender.com/countries/name/${countryData.address.country}`);
-    if (!resGeo.ok) throw new Error('Problem getting country');
-
-    const data = await resGeo.json();
-
-    renderCountry(data[0]);
-
-    return `you are in ${countryData.address.country}`;
-  }
-  catch (err) {
-    // alert(err);
-    throw err;
-  }
-};
-
-
-(async function () {
-  try {
-    const city = await whereAmI();
-    console.log(`2: ${city}`);
+    const data = await Promise.all([
+      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c1}`),
+      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c2}`),
+      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c3}`),
+    ]);
+    console.log(data.map(d => d[0].capital));
   } catch (err) {
-    console.error(`2: ${err} 💥`);
+    console.error(err);
   }
-  console.log('3: Finished getting location');
+}
+get3Countries('portugal', 'canada', 'tanzania');
+
+// Promise.race
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://restcountries.eu/rest/v2/name/italy`),
+    getJSON(`https://restcountries.eu/rest/v2/name/egypt`),
+    getJSON(`https://restcountries.eu/rest/v2/name/mexico`),
+  ]);
+  console.log(res[0]);
 })();
-
-
-
-
