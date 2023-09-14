@@ -411,51 +411,71 @@ const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
 
 // solution
 
-const imgContainer = document.querySelector('.images');
+// const imgContainer = document.querySelector('.images');
 
-const createImage = function (imgPath) {
-  return new Promise(function (resolve, reject) {
-    const img = document.createElement('img');
-    img.src = imgPath;
+// const createImage = function (imgPath) {
+//   return new Promise(function (resolve, reject) {
+//     const img = document.createElement('img');
+//     img.src = imgPath;
 
-    img.addEventListener('load', function () {
-      imgContainer.append(img);
-      resolve(img);
-    });
+//     img.addEventListener('load', function () {
+//       imgContainer.append(img);
+//       resolve(img);
+//     });
 
-    img.addEventListener('error', function () {
-      reject(new Error('Image not found'));
-    });
-  });
-};
+//     img.addEventListener('error', function () {
+//       reject(new Error('Image not found'));
+//     });
+//   });
+// };
 
 
 
-let currentImg;
+// let currentImg;
 
-createImage('https://picsum.photos/id/237/200/300')
-  .then(img => {
-    currentImg = img;
-    console.log('Image 1 loaded');
-    return wait(2);
-  })
-  .then(() => {
-    currentImg.style.display = 'none';
-    return createImage('https://picsum.photos/id/238/200/300');
-  })
-  .then(img => {
-    currentImg = img;
-    console.log('Image 2 loaded');
-    return wait(2);
-  })
-  .then(() => {
-    currentImg.style.display = 'none';
-  })
-  .catch(err => console.error(err));
+// createImage('https://picsum.photos/id/237/200/300')
+//   .then(img => {
+//     currentImg = img;
+//     console.log('Image 1 loaded');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//     return createImage('https://picsum.photos/id/238/200/300');
+//   })
+//   .then(img => {
+//     currentImg = img;
+//     console.log('Image 2 loaded');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//   })
+//   .catch(err => console.error(err));
 
-// Promisifying setTimeout
-const wait = function (seconds) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, seconds * 1000);
-  });
-};
+// // Promisifying setTimeout
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+
+const whereAmI = async function (country) {
+  // this code will run in the bg till the res value is fetched
+  // the blocking in the await function will not interefere with the main thread 
+  // on which the main code is getting executed.
+  const res = await fetch(`https://countries-api-836d.onrender.com/countries/name/${country}`);
+
+  // sync await is just syntactical sugercoading over the then function else
+  // fetch("link").then(res=>console.log(res);)
+
+  // since the res.json() return a new promise and then we had to return that promise 
+  // and then we chain .then handler on that promise
+  // but we can directly store in a vatiable directlly
+  const data = await res.json();
+  renderCountry(data[0]);
+  console.log(data);
+}
+
+whereAmI(`germany`);
