@@ -523,18 +523,25 @@ const whereAmI = async function () {
     const countryData = await resLoc.json();
 
     const resGeo = await fetch(`https://countries-api-836d.onrender.com/countries/name/${countryData.address.country}`);
-
     if (!resGeo.ok) throw new Error('Problem getting country');
 
     const data = await resGeo.json();
 
     renderCountry(data[0]);
-    console.log(data);
+
+    return `you are in ${countryData.address.country}`;
   }
   catch (err) {
-    alert(err);
+    // alert(err);
+    throw err;
   }
 }
-whereAmI();
+
+
+whereAmI()
+  .then(data => console.log(data))
+  .catch(err => console.log(err));
+
+
 
 
