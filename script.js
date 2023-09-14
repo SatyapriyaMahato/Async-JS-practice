@@ -535,12 +535,18 @@ const whereAmI = async function () {
     // alert(err);
     throw err;
   }
-}
+};
 
 
-whereAmI()
-  .then(data => console.log(data))
-  .catch(err => console.log(err));
+(async function () {
+  try {
+    const city = await whereAmI();
+    console.log(`2: ${city}`);
+  } catch (err) {
+    console.error(`2: ${err} 💥`);
+  }
+  console.log('3: Finished getting location');
+})();
 
 
 
