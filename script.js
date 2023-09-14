@@ -186,34 +186,34 @@ const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
 //   getCountryData("asbhwud");
 // })
 
-const getCountryData = function (country) {
-  // Country 1
-  getJSON(
-    `${apiLink}/name/${country}`,
-    'Country not found'
-  )
-    .then(data => {
-      renderCountry(data[0]);
-      const neighbour = data[0].borders[0];
+// const getCountryData = function (country) {
+//   // Country 1
+//   getJSON(
+//     `${apiLink}/name/${country}`,
+//     'Country not found'
+//   )
+//     .then(data => {
+//       renderCountry(data[0]);
+//       const neighbour = data[0].borders[0];
 
-      if (!neighbour) throw new Error('No neighbour found!');
+//       if (!neighbour) throw new Error('No neighbour found!');
 
-      // Country 2
-      return getJSON(
-        `${apiLink}/alpha/${neighbour}`,
-        'Country not found'
-      );
-    })
+//       // Country 2
+//       return getJSON(
+//         `${apiLink}/alpha/${neighbour}`,
+//         'Country not found'
+//       );
+//     })
 
-    .then(data => renderCountry(data, 'neighbour'))
-    .catch(err => {
-      console.error(`${err} 💥💥💥`);
-      renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
-    });
-};
+//     .then(data => renderCountry(data, 'neighbour'))
+//     .catch(err => {
+//       console.error(`${err} 💥💥💥`);
+//       renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
+//     })
+//     .finally(() => {
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
 
 
 
@@ -313,35 +313,35 @@ const getCountryData = function (country) {
 
 ///////////////////////////////////////
 // Promisifying the Geolocation API
-const getPosition = function () {
-  return new Promise(function (resolve, reject) {
-    // navigator.geolocation.getCurrentPosition(
-    //   position => resolve(position),
-    //   err => reject(err)
-    // );
-    // here the position is automatically passed into the resolve as argument
-    navigator.geolocation.getCurrentPosition(resolve, reject);
-  });
-};
+// const getPosition = function () {
+//   return new Promise(function (resolve, reject) {
+//     // navigator.geolocation.getCurrentPosition(
+//     //   position => resolve(position),
+//     //   err => reject(err)
+//     // );
+//     // here the position is automatically passed into the resolve as argument
+//     navigator.geolocation.getCurrentPosition(resolve, reject);
+//   });
+// };
 
 
 
 
-const whereAmI = function () {
-  getPosition().then(pos => {
-    const { latitude: lat, longitude: lng } = pos.coords;
-    return fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`)
-  }).then((response) => {
-    if (!response.ok) throw new Error(`Something not right (${response.status})`);
-    return response.json();
-  })
-    .then(function (data) {
-      getCountryData(data.address.country);
-    })
-    .catch(Error => {
-      alert(Error) // Error!
-    },);
-}
+// const whereAmI = function () {
+//   getPosition().then(pos => {
+//     const { latitude: lat, longitude: lng } = pos.coords;
+//     return fetch(`https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lng}&format=json`)
+//   }).then((response) => {
+//     if (!response.ok) throw new Error(`Something not right (${response.status})`);
+//     return response.json();
+//   })
+//     .then(function (data) {
+//       getCountryData(data.address.country);
+//     })
+//     .catch(Error => {
+//       alert(Error) // Error!
+//     },);
+// }
 // btn.addEventListener('click', whereAmI);
 
 
@@ -357,48 +357,105 @@ const whereAmI = function () {
 //     console.log()
 //   });
 
-let imgEl = '';
+// let imgEl = '';
 
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// const createImg = function (imgPath) {
+//   return new Promise(function (resolve, reject) {
+//     resolve(document.createElement('img'))
+//   }).then(data => {
+//     data.setAttribute("src", `${imgPath}`);
+//     return data;
+//   }).then(data => {
+//     imgEl = data;
+//     countriesContainer.appendChild(data)
+//   })
+//     .then(() => {
+//       wait(2).then(() => {
+//         imgEl.style.display = "none";
+//         console.log(imgEl);
+//       })
+//         .then(() => {
+//           wait(2).then(() => {
+//             console.log(imgEl);
+//             imgEl.setAttribute("src", "https://picsum.photos/id/237/400/300");
+//             imgEl.style.display = "block";
+//           }).then(() => {
+//             wait(2).then(() => {
+//               console.log(imgEl);
+//               imgEl.style.display = "none";
+//             })
+//           })
+//         })
+//     })
+//     .catch(Error => {
+//       alert(Error) // Error!
+//     },)
+// };
+
+// btn.addEventListener("click", function () {
+//   createImg("https://picsum.photos/id/237/200/300");
+// })
+
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+
+// solution
+
+const imgContainer = document.querySelector('.images');
+
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+
+    img.addEventListener('load', function () {
+      imgContainer.append(img);
+      resolve(img);
+    });
+
+    img.addEventListener('error', function () {
+      reject(new Error('Image not found'));
+    });
+  });
+};
+
+
+
+let currentImg;
+
+createImage('https://picsum.photos/id/237/200/300')
+  .then(img => {
+    currentImg = img;
+    console.log('Image 1 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+    return createImage('https://picsum.photos/id/238/200/300');
+  })
+  .then(img => {
+    currentImg = img;
+    console.log('Image 2 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+  })
+  .catch(err => console.error(err));
+
+// Promisifying setTimeout
 const wait = function (seconds) {
   return new Promise(function (resolve) {
     setTimeout(resolve, seconds * 1000);
   });
 };
-
-const createImg = function (imgPath) {
-  return new Promise(function (resolve, reject) {
-    resolve(document.createElement('img'))
-  }).then(data => {
-    data.setAttribute("src", `${imgPath}`);
-    return data;
-  }).then(data => {
-    imgEl = data;
-    countriesContainer.appendChild(data)
-  })
-    .then(() => {
-      wait(2).then(() => {
-        imgEl.style.display = "none";
-        console.log(imgEl);
-      })
-        .then(() => {
-          wait(2).then(() => {
-            console.log(imgEl);
-            imgEl.setAttribute("src", "https://picsum.photos/id/237/400/300");
-            imgEl.style.display = "block";
-          }).then(() => {
-            wait(2).then(() => {
-              console.log(imgEl);
-              imgEl.style.display = "none";
-            })
-          })
-        })
-    })
-    .catch(Error => {
-      alert(Error) // Error!
-    },)
-};
-
-btn.addEventListener("click", function () {
-  createImg("https://picsum.photos/id/237/200/300");
-})
-
