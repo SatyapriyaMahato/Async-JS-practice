@@ -557,68 +557,150 @@ const apiKey = `pk.18f82f578d8f656a2719c24a0974a158`;
 // console.error(err);
 // }
 // Running Promises in Parallel
-const get3Countries = async function (c1, c2, c3) {
-  try {
-    // const [data1] = await getJSON(
-    //   `https://countries-api-836d.onrender.com/countries/name/${c1}`
-    // );
-    // const [data2] = await getJSON(
-    //   `https://countries-api-836d.onrender.com/countries/name/${c2}`
-    // );
-    // const [data3] = await getJSON(
-    //   `https://countries-api-836d.onrender.com/countries/name/${c3}`
-    // );
+// const get3Countries = async function (c1, c2, c3) {
+//   try {
+//     // const [data1] = await getJSON(
+//     //   `https://countries-api-836d.onrender.com/countries/name/${c1}`
+//     // );
+//     // const [data2] = await getJSON(
+//     //   `https://countries-api-836d.onrender.com/countries/name/${c2}`
+//     // );
+//     // const [data3] = await getJSON(
+//     //   `https://countries-api-836d.onrender.com/countries/name/${c3}`
+//     // );
 
 
-    const data = await Promise.all([
-      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c1}`),
-      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c2}`),
-      getJSON(`https://countries-api-836d.onrender.com/countries/name/${c3}`),
-    ]);
-    console.log(data.map(d => d[0].capital));
-  } catch (err) {
-    console.error(err);
-  }
-}
-get3Countries('portugal', 'canada', 'tanzania');
+//     const data = await Promise.all([
+//       getJSON(`https://countries-api-836d.onrender.com/countries/name/${c1}`),
+//       getJSON(`https://countries-api-836d.onrender.com/countries/name/${c2}`),
+//       getJSON(`https://countries-api-836d.onrender.com/countries/name/${c3}`),
+//     ]);
+//     console.log(data.map(d => d[0].capital));
+//   } catch (err) {
+//     console.error(err);
+//   }
+// }
+// get3Countries('portugal', 'canada', 'tanzania');
 
 
-const timeout = function (sec) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error('Request took too long!'));
-    }, sec * 1000);
+// const timeout = function (sec) {
+//   return new Promise(function (_, reject) {
+//     setTimeout(function () {
+//       reject(new Error('Request took too long!'));
+//     }, sec * 1000);
+//   });
+// };
+
+// Promise.race([
+//   getJSON(`https://restcountries.eu/rest/v2/name/tanzania`),
+//   timeout(5),
+// ])
+//   .then(res => console.log(res[0]))
+//   .catch(err => console.error(err));
+
+// // Promise.allSettled
+// Promise.allSettled([
+//   Promise.resolve('Success'),
+//   Promise.reject('ERROR'),
+//   Promise.resolve('Another success'),
+// ]).then(res => console.log(res));
+
+// Promise.all([
+//   Promise.resolve('Success'),
+//   Promise.reject('ERROR'),
+//   Promise.resolve('Another success'),
+// ])
+//   .then(res => console.log(res))
+//   .catch(err => console.error(err));
+
+// // Promise.any [ES2021]
+// Promise.any([
+//   Promise.resolve('Success'),
+//   Promise.reject('ERROR'),
+//   Promise.resolve('Another success'),
+// ])
+//   .then(res => console.log(res))
+//   .catch(err => console.error(err));
+
+const wait = function (seconds) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
   });
 };
 
-Promise.race([
-  getJSON(`https://restcountries.eu/rest/v2/name/tanzania`),
-  timeout(5),
-])
-  .then(res => console.log(res[0]))
-  .catch(err => console.error(err));
+const imgContainer = document.querySelector('.images');
 
-// Promise.allSettled
-Promise.allSettled([
-  Promise.resolve('Success'),
-  Promise.reject('ERROR'),
-  Promise.resolve('Another success'),
-]).then(res => console.log(res));
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
 
-Promise.all([
-  Promise.resolve('Success'),
-  Promise.reject('ERROR'),
-  Promise.resolve('Another success'),
-])
-  .then(res => console.log(res))
-  .catch(err => console.error(err));
+    img.addEventListener('load', function () {
+      imgContainer.append(img);
+      resolve(img);
+    });
 
-// Promise.any [ES2021]
-Promise.any([
-  Promise.resolve('Success'),
-  Promise.reject('ERROR'),
-  Promise.resolve('Another success'),
-])
-  .then(res => console.log(res))
-  .catch(err => console.error(err));
+    img.addEventListener('error', function () {
+      reject(new Error('Image not found'));
+    });
+  });
+};
 
+let currentImg;
+
+// createImage('img/img-1.jpg')
+//   .then(img => {
+//     currentImg = img;
+//     console.log('Image 1 loaded');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//     return createImage('img/img-2.jpg');
+//   })
+//   .then(img => {
+//     currentImg = img;
+//     console.log('Image 2 loaded');
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImg.style.display = 'none';
+//   })
+//   .catch(err => console.error(err));
+
+async function chalSoln() {
+  try {
+    const response1 = await createImage('img/img-1.jpg');
+    if (response1) {
+      currentImg = response1;
+      await wait(2);
+      currentImg.style.display = 'none';
+      await wait(2);
+
+    }
+    const response2 = await createImage('img/img-2.jpg');
+    if (response2) {
+      currentImg = response2;
+      await wait(2);
+      currentImg.style.display = 'none';
+      console.log('Image 2 removed');
+    }
+  } catch (error) {
+    console.error(`Could not get products: ${error}`);
+  }
+}
+
+// chalSoln();
+const data = ['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg'];
+async function loadAll(imgArr) {
+  try {
+    const imgs = imgArr.map(async img => await createImage(img));
+    const imgsEl = await Promise.all(imgs);
+    console.log(imgsEl);
+    imgsEl.forEach(img => img.classList.add('parallel'));
+  } catch (err) {
+    console.error(err);
+  }
+
+}
+loadAll(data);
